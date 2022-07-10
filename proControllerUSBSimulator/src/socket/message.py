@@ -42,7 +42,7 @@ class RequestMessage:
 
     if parsed.command == MessageCommand.Setup:
       parsed.subcommand = SetupMessageSubcommand(message[1])
-    else:
+    elif parsed.command == MessageCommand.UART and len(message) > 16:
       parsed.subcommand = UARTMessageSubcommand(message[10])
       parsed.timer = message[1]
       parsed.data = message[11:]
@@ -60,3 +60,32 @@ class RequestMessage:
     self.spi_len = None
     self.data = None
     self.timer = None
+
+
+class ResponseFactory:
+  def __init__(self, controller): 
+    self.controller = controller
+
+  def response_for_request(self, request, timer = 0):
+    if request.command == MessageCommand.Setup:
+      if request.subcommand == SetupMessageSubcommand.MacAddrRequest:
+        return make_response(0x81, request.subcommand.value, bytes.fromhex("0003" + controller.reverse_mac_address_hex()))
+      elif request.subcommand == SetupMessageSubcommand.Handshake:
+        return make_response(0x81, request.subcommand.value, [])
+    elif request.command == MessageCommand.UART:
+      if request.subcommand == UARTMessageSubcommand.BluetoothPairing:
+        make_uart_response(0x81, request.subcommand.value, [0x03])
+
+  def make_uart_response(self, code, subcommand, data, timer):
+    buf = bytearray.fromhex(self.controller.initial_input)
+    buf.extend([code, subcommand])
+    buf.extend(data)
+
+    return make_response(0x21, timer, buf)
+
+  def make_response(self, command, subcommand, data):
+    buffer = bytearray([command, subcommand])
+    buffer.extend(data)
+    padding = bytearray(64-len(buffer))
+    buffer.extend(padding)
+    return buffer

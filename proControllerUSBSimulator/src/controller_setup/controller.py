@@ -1,4 +1,6 @@
-class SwitchControllerType:
+from enum import Enum
+
+class SwitchControllerType(Enum):
   LEFT_JOYCON=1
   RIGHT_JOYCON=2
   PRO_CONTROLLER=3
@@ -6,7 +8,7 @@ class SwitchControllerType:
 class SwitchController:
   def __init__(
     self,
-    type,
+    type=SwitchControllerType.PRO_CONTROLLER,
     mac_address="64:b5:c6:40:e1:cc",
     initial_input="9100800092d87e0c987b00",
     color="323232ffffffffffffffffffff"
@@ -16,19 +18,13 @@ class SwitchController:
     self.initial_input = initial_input
     self.color = color
 
-  def padding_message(self, message):
-    return message + ("0" * (128-len(message)))
-
-  def make_80_01_ans(self):
+  def reverse_mac_address_hex(self):
     address = self.mac_address.split(":")
     address.reverse()
     address_string = "".join(address)
-
-    formatted_bytes = self.padding_message(f"8101000{self.type.value}{address_string}")
-    return bytes.fromhex(formatted_bytes)
-
-  def make_80_02_ans(self):
-    formatted_bytes = self.padding_message("8102")
-    return bytes.fromhex(formatted_bytes)
-
+    return address_string
   
+  def mac_address_hex(self):
+    address = self.mac_address.split(":")
+    address_string = "".join(address)
+    return address_string
