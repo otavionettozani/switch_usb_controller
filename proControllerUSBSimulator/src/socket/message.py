@@ -37,7 +37,7 @@ class SPICommand(Enum):
 class RequestMessage:
   @classmethod
   def parse(self, message):
-    parsed = Message()
+    parsed = RequestMessage()
     parsed.command = MessageCommand(message[0])
 
     if parsed.command == MessageCommand.Setup:
@@ -66,18 +66,55 @@ class ResponseFactory:
   def __init__(self, controller): 
     self.controller = controller
 
+  def response_for_controller(self, timer = 0):
+    buffer = bytearray.fromhex(self.controller.state_hex())
+    return self.make_response(0x30, timer, buffer)
+
   def response_for_request(self, request, timer = 0):
     if request.command == MessageCommand.Setup:
       if request.subcommand == SetupMessageSubcommand.MacAddrRequest:
-        return make_response(0x81, request.subcommand.value, bytes.fromhex("0003" + controller.reverse_mac_address_hex()))
+        return self.make_response(0x81, request.subcommand.value, bytes.fromhex("0003" + self.controller.reverse_mac_address_hex()))
       elif request.subcommand == SetupMessageSubcommand.Handshake:
-        return make_response(0x81, request.subcommand.value, [])
+        return self.make_response(0x81, request.subcommand.value, [])
     elif request.command == MessageCommand.UART:
       if request.subcommand == UARTMessageSubcommand.BluetoothPairing:
-        make_uart_response(0x81, request.subcommand.value, [0x03])
+        return self.make_uart_response(0x81, request.subcommand.value, [0x03], timer)
+      elif request.subcommand == UARTMessageSubcommand.DeviceInfo:
+        return self.make_uart_response(0x82, request.subcommand.value, bytes.fromhex("03480302" + self.controller.mac_address_hex + "0101"), timer)
+      elif request.subcommand == UARTMessageSubcommand.InputMode or request.subcommand == UARTMessageSubcommand.LowEnergy or request.subcommand == UARTMessageSubcommand.PlayerLight or request.subcommand == UARTMessageSubcommand.Unknown1 or request.subcommand == UARTMessageSubcommand.IMU or request.subcommand == UARTMessageSubcommand.Vibration:
+        return self.make_uart_response(0x80, request.subcommand.value, [], timer)
+      elif request.subcommand == UARTMessageSubcommand.TriggerElapsedTime:
+        return self.make_uart_response(0x83, request.subcommand.value, [], timer)
+      elif request.subcommand == UARTMessageSubcommand.NFCConf:
+        return self.make_uart_response(0xa0, request.subcommand.value, bytes.fromhex("0100ff0003000501"), timer)
+      elif request.subcommand == UARTMessageSubcommand.SPI:
+        if request.spi_command == SPICommand.SerialNumber:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("ffffffffffffffffffffffffffffffff"), timer)
+        elif request.spi_command == SPICommand.ControllerColor:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex(self.controller.color), timer)
+        elif request.spi_command == SPICommand.FactorySensorStick:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("50fd0000c60f0f30619630f3d41454411554c7799c333663"), timer)
+        elif request.spi_command == SPICommand.FactoryStick:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("0f30619630f3d41454411554c7799c333663"), timer)
+        elif request.spi_command == SPICommand.FactoryCalibration:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("21466359887c75e665d16779320665053664ff323232ffffff"), timer)
+        elif request.spi_command == SPICommand.UserCalibration:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("ffffffffffffffffffffffffffffffffffffffffffffffff"), timer)
+        elif request.spi_command == SPICommand.MotionCalibration:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("beff3e00f001004000400040fefffeff0800e73be73be73b"), timer)
+
+    return b""
+
+  def make_spi_response(self, address, data, timer):
+    buf = bytearray(address)
+    buf.extend([0x00, 0x00])
+    buf.append(len(data))
+    buf.extend(data)
+    
+    return self.make_uart_response(0x90, 0x10, buf, timer)
 
   def make_uart_response(self, code, subcommand, data, timer):
-    buf = bytearray.fromhex(self.controller.initial_input)
+    buf = bytearray.fromhex(self.controller.state_hex())
     buf.extend([code, subcommand])
     buf.extend(data)
 
