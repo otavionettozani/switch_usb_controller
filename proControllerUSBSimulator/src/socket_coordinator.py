@@ -1,11 +1,14 @@
-from socket.socket import Socket
-from socket.message import ResponseFactory, MessageCommand, SetupMessageSubcommand
+from usb_socket.socket import Socket
+from usb_socket.message import ResponseFactory, MessageCommand, SetupMessageSubcommand
 import threading
 
 class SocketCoordinator:
   def __init__(self, controller):
     self.socket = Socket(self.handle_message)
     self.responseFactory = ResponseFactory(controller)
+
+  def start(self):
+    self.socket.open()
 
 
   def handle_message(self, message):
@@ -16,7 +19,7 @@ class SocketCoordinator:
       if response:
         self.socket.send(response)
   
-  
+
   def _input_thread(self):
     while True:
       response = self.responseFactory.response_for_controller(self.socket.timer)
