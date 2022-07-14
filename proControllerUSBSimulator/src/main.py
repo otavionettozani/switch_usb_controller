@@ -3,10 +3,16 @@ from controller_setup.controller import SwitchController
 from threading import Timer, Thread
 from time import time
 from math import sin, cos, pi
+from socket_coordinator import SocketCoordinator
 
 controller = SwitchController()
-
+coordinator = SocketCoordinator(controller)
 app = Flask(__name__)
+
+@app.post("/api/socket/start")
+def start_socket():
+  global coordinator
+  coordinator.start()
 
 @app.get("/api/v1/controller")
 def get_controller():
