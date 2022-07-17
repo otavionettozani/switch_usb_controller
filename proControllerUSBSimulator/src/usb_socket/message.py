@@ -29,10 +29,10 @@ class SPICommand(Enum):
   ControllerColor = b"\x50\x60"
   FactorySensorStick = b"\x80\x60"
   FactoryStick = b"\x98\x60"
-  FactoryCalibration = b"\x3d\x60"
+  FactoryCalibration2 = b"\x3d\x60"
   UserCalibration = b"\x10\x80"
   MotionCalibration = b"\x28\x80"
-  Unknown1 = b"\x20\x60"
+  FactoryCalibration1 = b"\x20\x60"
 
 class RequestMessage:
   @classmethod
@@ -96,8 +96,10 @@ class ResponseFactory:
           return self.make_spi_response(request.spi_command.value, bytes.fromhex("50fd0000c60f0f30619630f3d41454411554c7799c333663"), timer)
         elif request.spi_command == SPICommand.FactoryStick:
           return self.make_spi_response(request.spi_command.value, bytes.fromhex("0f30619630f3d41454411554c7799c333663"), timer)
-        elif request.spi_command == SPICommand.FactoryCalibration:
+        elif request.spi_command == SPICommand.FactoryCalibration2:
           return self.make_spi_response(request.spi_command.value, bytes.fromhex("21466359887c75e665d16779320665053664ff323232ffffff"), timer)
+        elif request.spi_command == SPICommand.FactoryCalibration1:
+          return self.make_spi_response(request.spi_command.value, bytes.fromhex("3500a0fe5d01004000400040d7ffceffc1ff3b343b343b34"), timer)
         elif request.spi_command == SPICommand.UserCalibration:
           return self.make_spi_response(request.spi_command.value, bytes.fromhex("ffffffffffffffffffffffffffffffffffffffffffffffff"), timer)
         elif request.spi_command == SPICommand.MotionCalibration:
