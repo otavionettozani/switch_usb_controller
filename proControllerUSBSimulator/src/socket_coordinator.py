@@ -1,6 +1,7 @@
 from usb_socket.socket import Socket
 from usb_socket.message import ResponseFactory, MessageCommand, SetupMessageSubcommand
 import threading
+import time
 
 class SocketCoordinator:
   def __init__(self, controller):
