@@ -16,6 +16,7 @@ class SocketCoordinator:
     print(message.__dict__)
     if message.command == MessageCommand.Setup and message.subcommand == SetupMessageSubcommand.ActivateUsb:
       self.input_thread = threading.Thread(target=self._input_thread)
+      self.input_thread.start()
     else:
       response = self.responseFactory.response_for_request(message, self.socket.timer)
       print(">>>")
