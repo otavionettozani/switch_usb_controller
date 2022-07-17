@@ -80,7 +80,7 @@ class ResponseFactory:
       if request.subcommand == UARTMessageSubcommand.BluetoothPairing:
         return self.make_uart_response(0x81, request.subcommand.value, [0x03], timer)
       elif request.subcommand == UARTMessageSubcommand.DeviceInfo:
-        return self.make_uart_response(0x82, request.subcommand.value, bytes.fromhex("03480302" + self.controller.mac_address_hex + "0101"), timer)
+        return self.make_uart_response(0x82, request.subcommand.value, bytes.fromhex("03480302" + self.controller.mac_address_hex() + "0101"), timer)
       elif request.subcommand == UARTMessageSubcommand.InputMode or request.subcommand == UARTMessageSubcommand.LowEnergy or request.subcommand == UARTMessageSubcommand.PlayerLight or request.subcommand == UARTMessageSubcommand.Unknown1 or request.subcommand == UARTMessageSubcommand.IMU or request.subcommand == UARTMessageSubcommand.Vibration:
         return self.make_uart_response(0x80, request.subcommand.value, [], timer)
       elif request.subcommand == UARTMessageSubcommand.TriggerElapsedTime:
@@ -118,7 +118,7 @@ class ResponseFactory:
     buf.extend([code, subcommand])
     buf.extend(data)
 
-    return make_response(0x21, timer, buf)
+    return self.make_response(0x21, timer, buf)
 
   def make_response(self, command, subcommand, data):
     buffer = bytearray([command, subcommand])

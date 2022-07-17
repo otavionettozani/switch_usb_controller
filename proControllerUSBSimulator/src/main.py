@@ -9,10 +9,11 @@ controller = SwitchController()
 coordinator = SocketCoordinator(controller)
 app = Flask(__name__)
 
-@app.post("/api/socket/start")
+@app.post("/api/v1/socket/start")
 def start_socket():
   global coordinator
   coordinator.start()
+  return "", 204
 
 @app.get("/api/v1/controller")
 def get_controller():

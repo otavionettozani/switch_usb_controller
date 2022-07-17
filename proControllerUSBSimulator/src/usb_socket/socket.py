@@ -1,7 +1,7 @@
 import os
 import threading
 import time
-from message import Message
+from .message import RequestMessage
 from enum import Enum
 
 class SocketState(Enum):
@@ -32,14 +32,16 @@ class Socket:
     self.timer_thread.start()
     self.state = SocketState.Open
   
-  def send(data):
+  def send(self, data):
     os.write(self.data_file, data)
 
   def _socket_thread(self):
     while True:
       try:
         data = os.read(self.data_file, 128)
-        message = Message.parse(data)
+        if len(data) == 0:
+          continue
+        message = RequestMessage.parse(data)
         self.message_callback(message)
       except BlockingIOError:
         pass
