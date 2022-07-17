@@ -45,7 +45,7 @@ class Socket:
         self.message_callback(message)
       except BlockingIOError:
         pass
-      except ValueError, e:
+      except ValueError as e:
         print("Message Error")
         print(str(e))
         pass
