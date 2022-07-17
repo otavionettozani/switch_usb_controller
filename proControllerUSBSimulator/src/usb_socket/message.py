@@ -67,7 +67,7 @@ class ResponseFactory:
     self.controller = controller
 
   def response_for_controller(self, timer = 0):
-    buffer = bytearray.fromhex(self.controller.state_hex())
+    buffer = bytes.fromhex(self.controller.state_hex())
     return self.make_response(0x30, timer, buffer)
 
   def response_for_request(self, request, timer = 0):

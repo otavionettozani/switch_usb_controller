@@ -36,6 +36,7 @@ class Socket:
     os.write(self.data_file, data)
 
   def _socket_thread(self):
+    data = b''
     while True:
       try:
         data = os.read(self.data_file, 128)
@@ -47,6 +48,7 @@ class Socket:
         pass
       except ValueError as e:
         print("Message Error")
+        print(data)
         print(str(e))
         pass
       except:

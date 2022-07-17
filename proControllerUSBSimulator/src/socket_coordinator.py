@@ -29,8 +29,6 @@ class SocketCoordinator:
   def _input_thread(self):
     print("input thread")
     while True:
-      print(">>>")
       response = self.responseFactory.response_for_controller(self.socket.timer)
-      print(response)
       self.socket.send(response)
       time.sleep(0.03)
