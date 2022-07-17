@@ -56,3 +56,5 @@ def _roll_thread_method(analog_stick, duration, frequency):
     end = time()
   controller.state.__dict__[f"{analog_stick}_stick_x"] = 0
   controller.state.__dict__[f"{analog_stick}_stick_y"] = 0
+
+app.run(host='0.0.0.0', port=5000, debug=True, threaded=True)

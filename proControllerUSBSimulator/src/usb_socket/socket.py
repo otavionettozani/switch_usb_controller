@@ -45,6 +45,10 @@ class Socket:
         self.message_callback(message)
       except BlockingIOError:
         pass
+      except ValueError, e:
+        print("Message Error")
+        print(str(e))
+        pass
       except:
         print('unknown switch_output error')
         os.exit(1)
