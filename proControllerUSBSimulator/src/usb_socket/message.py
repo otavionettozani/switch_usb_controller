@@ -19,7 +19,7 @@ class UARTMessageSubcommand(Enum):
   SPI = 0x10
   NFCConf = 0x21
   PlayerLight = 0x30
-  Unknown1 = 0x38
+  HomeLight = 0x38
   IMU = 0x40
   Vibration = 0x48
 
@@ -81,12 +81,12 @@ class ResponseFactory:
         return self.make_uart_response(0x81, request.subcommand.value, [0x03], timer)
       elif request.subcommand == UARTMessageSubcommand.DeviceInfo:
         return self.make_uart_response(0x82, request.subcommand.value, bytes.fromhex("03480302" + self.controller.mac_address_hex() + "0101"), timer)
-      elif request.subcommand == UARTMessageSubcommand.InputMode or request.subcommand == UARTMessageSubcommand.LowEnergy or request.subcommand == UARTMessageSubcommand.PlayerLight or request.subcommand == UARTMessageSubcommand.Unknown1 or request.subcommand == UARTMessageSubcommand.IMU or request.subcommand == UARTMessageSubcommand.Vibration:
+      elif request.subcommand == UARTMessageSubcommand.InputMode or request.subcommand == UARTMessageSubcommand.LowEnergy or request.subcommand == UARTMessageSubcommand.PlayerLight or request.subcommand == UARTMessageSubcommand.HomeLight or request.subcommand == UARTMessageSubcommand.IMU or request.subcommand == UARTMessageSubcommand.Vibration:
         return self.make_uart_response(0x80, request.subcommand.value, [], timer)
       elif request.subcommand == UARTMessageSubcommand.TriggerElapsedTime:
         return self.make_uart_response(0x83, request.subcommand.value, [], timer)
       elif request.subcommand == UARTMessageSubcommand.NFCConf:
-        return self.make_uart_response(0xa0, request.subcommand.value, bytes.fromhex("0100ff0003000501"), timer)
+        return self.make_uart_response(0xa0, request.subcommand.value, bytes.fromhex("0100ff0003000501000000000000000000000000000000000000000000000000005c"), timer)
       elif request.subcommand == UARTMessageSubcommand.SPI:
         if request.spi_command == SPICommand.SerialNumber:
           return self.make_spi_response(request.spi_command.value, bytes.fromhex("ffffffffffffffffffffffffffffffff"), timer)
