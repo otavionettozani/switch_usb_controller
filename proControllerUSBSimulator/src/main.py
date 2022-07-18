@@ -30,6 +30,15 @@ def set_controller_state():
   Timer(time, _reset_buttons, [buttons]).start()
   return jsonify(controller.state.__dict__)
 
+@app.post("api/v1/move")
+def move_stick():
+  global controller
+  analog_stick = request.json["stick"]
+  [position_x, position_y] = request.json["position"]
+  controller.state.__dict__[f"{analog_stick}_stick_x"] = position_x
+  controller.state.__dict__[f"{analog_stick}_stick_y"] = position_y
+  return jsonify(controller.state.__dict__)
+
 @app.post("/api/v1/roll")
 def roll_analog_stick():
   global controller
