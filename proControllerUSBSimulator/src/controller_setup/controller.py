@@ -55,6 +55,10 @@ class SwitchControllerState:
   def get_right_stick_position_hex(self):
     horizontal_position = floor(2047 + 2048*self.right_stick_x)
     vertical_position = floor(2047 + 2048*self.right_stick_y)
+    if vertical_position < 0:
+      vertical_position = 0
+    if horizontal_position < 0:
+      horizontal_position = 0
     return self.position_to_bytes(horizontal_position, vertical_position)
   
   def position_to_bytes(self, horizontal_position, vertical_position):
