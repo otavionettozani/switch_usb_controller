@@ -127,9 +127,9 @@ class SwitchController:
 
     hex_data_string = f"{hex_data:x}"
 
-    if hex_data_string != self.last_state:
+    if hex_data_string != self.state.last_state:
       print("Controller State Changed")
       print(hex_data_string)
-    self.last_state = hex_data_string
+    self.state.last_state = hex_data_string
 
     return hex_data_string
