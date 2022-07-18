@@ -47,18 +47,15 @@ class SwitchControllerState:
 
   # Sticks positions will vary between -1 and 1 in this object and they vary between 0 and 4095 in the controllers, so we need to do that conversion
   def get_left_stick_position_hex(self):
-    horizontal_position = floor(2047 + 2048*self.left_stick_x)
-    vertical_position = floor(2047 + 2048*self.left_stick_y)
+    horizontal_position = floor(max(2047 + 2048*self.left_stick_x, 0))
+    vertical_position = floor(max(2047 + 2048*self.left_stick_y, 0))
     return self.position_to_bytes(horizontal_position, vertical_position)
 
 
   def get_right_stick_position_hex(self):
-    horizontal_position = floor(2047 + 2048*self.right_stick_x)
-    vertical_position = floor(2047 + 2048*self.right_stick_y)
-    if vertical_position < 0:
-      vertical_position = 0
-    if horizontal_position < 0:
-      horizontal_position = 0
+    horizontal_position = floor(max(2047 + 2048*self.right_stick_x, 0))
+    vertical_position = floor(max(2047 + 2048*self.right_stick_y, 0))
+
     return self.position_to_bytes(horizontal_position, vertical_position)
   
   def position_to_bytes(self, horizontal_position, vertical_position):
