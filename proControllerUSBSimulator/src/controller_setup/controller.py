@@ -43,6 +43,8 @@ class SwitchControllerState:
     self.right_stick_x = 0
     self.right_stick_y = 0
 
+    self.last_state = ""
+
   # Sticks positions will vary between -1 and 1 in this object and they vary between 0 and 4095 in the controllers, so we need to do that conversion
   def get_left_stick_position_hex(self):
     horizontal_position = floor(2047 + 2048*self.left_stick_x)
@@ -123,4 +125,11 @@ class SwitchController:
     hex_data |= self.state.get_left_stick_position_hex() << 32
     hex_data |= self.state.get_right_stick_position_hex() << 8
 
-    return f"{hex_data:x}"
+    hex_data_string = f"{hex_data:x}"
+
+    if hex_data_string != self.last_state:
+      print("Controller State Changed")
+      print(hex_data_string)
+    self.last_state = hex_data_string
+
+    return hex_data_string
